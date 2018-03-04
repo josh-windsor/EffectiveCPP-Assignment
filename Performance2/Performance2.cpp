@@ -5,9 +5,9 @@
 #include "Performance2.h"
 
 #include <iostream>
-/*#include <GdiPlusHeaders.h>
+#include <GdiPlusHeaders.h>
 #include <GdiPlusColor.h>
-using namespace Gdiplus; */
+using namespace Gdiplus; 
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -193,47 +193,12 @@ CImage* RotateFast(CImage *i)
 {
 	CImage *dest = Copy(i);
 
-
-
-	int width = dest->GetWidth();
-	int height = dest->GetHeight();
-
-	int pitch = i->GetPitch();
-	BYTE* pInImage = (BYTE*)i->GetBits();
-	BYTE* pOutImage = (BYTE*)dest->GetBits();
-
-	long lAdrs;
-	double gray;
-	BYTE bRed, bGreen, bBlue;
-
-
-	for (int y = 0; y < height; y++)
-	{
-		for (int x = 0; x < width; x++)
-		{
-			lAdrs = y * pitch + x * 3;
-			bRed = *(pInImage + lAdrs);
-			bGreen = *(pInImage + lAdrs + 1);
-			bBlue = *(pInImage + lAdrs + 2);
-
-			//swap(image[i][j], image[image.size() - j - 1][image.size() - i - 1]);
-
-			*(pOutImage + lAdrs) = static_cast<BYTE>(bRed);
-			*(pOutImage + lAdrs + 1) = static_cast<BYTE>(bGreen);
-			*(pOutImage + lAdrs + 2) = static_cast<BYTE>(bBlue);
-
-		}
-	}
-
+	Bitmap* gdiPlusBitmap = Bitmap::FromHBITMAP(dest->Detach(), NULL);
+	gdiPlusBitmap->RotateFlip(Rotate90FlipNone);
+	HBITMAP hbmp;
+	gdiPlusBitmap->GetHBITMAP(Color::White, &hbmp);
+	dest->Attach(hbmp);
 	return dest;
-
-	/*HBITMAP  hsrc = i->Detach();
-	Bitmap* gdiPlusBitmap = Bitmap::FromHBITMAP(hsrc, NULL);
-	gdiPlusBitmap->RotateFlip(Rotate90FlipXY);
-	HBITMAP hdst;
-	gdiPlusBitmap->GetHBITMAP(Color::White, &hdst);
-	dest->Attach(hdst);
-	return dest;*/
 }
 
 
