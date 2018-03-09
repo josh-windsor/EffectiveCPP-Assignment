@@ -108,9 +108,17 @@ using namespace std;
 CImage* Copy(CImage *source)
 {
 	CImage *dest = new CImage;
-	dest -> Create(source -> GetWidth(), source -> GetHeight(), source -> GetBPP());
-	source -> Draw(dest -> GetDC(), 0, 0, dest -> GetWidth(), dest -> GetHeight(), 0, 0, source -> GetWidth(), source -> GetHeight());
-	dest -> ReleaseDC();
+	dest->Create(source->GetWidth(), source->GetHeight(), source->GetBPP());
+	source->Draw(dest->GetDC(), 0, 0, dest->GetWidth(), dest->GetHeight(), 0, 0, source->GetWidth(), source->GetHeight());
+	dest->ReleaseDC();
+	return dest;
+}
+CImage* CopyScale(CImage *source)
+{
+	CImage *dest = new CImage;
+	dest->Create(source->GetWidth() * 2, source->GetHeight() * 2 , source->GetBPP());
+	source->Draw(dest->GetDC(), 0, 0, dest->GetWidth() / 2, dest->GetHeight() / 2, 0, 0, source->GetWidth(), source->GetHeight());
+	dest->ReleaseDC();
 	return dest;
 }
 
@@ -201,6 +209,53 @@ CImage* RotateFast(CImage *i)
 	return dest;
 }
 
+float lerp(float s, float e, float t) { return s + (e - s)*t; }
+float blerp(float c00, float c10, float c01, float c11, float tx, float ty) {
+	return lerp(lerp(c00, c10, tx), lerp(c01, c11, tx), ty);
+}
+#define getByte(value, n) (value >> (n*8) & 0xFF)
+
+CImage* Scale(CImage *i)
+{
+
+	CImage *dest = CopyScale(i);
+
+
+	int oldWidth = (int)i->GetWidth();
+	int oldHeight = (int)i->GetHeight();
+
+	int newWidth = (int)dest->GetWidth();
+	int newHeight = (int)dest->GetHeight();
+
+	float xDiv = (float)(newWidth) * (oldWidth - 1);
+	float yDiv = (float)(newHeight) * (oldHeight - 1);
+
+
+	int x, y;
+	for (x = 0, y = 0; y < newHeight - 1; x++) {
+		if (x >= newWidth) {
+			x = 0; y++;
+			//printf("%i\n", y);
+		}
+		float gx = x / xDiv;
+		float gy = y / yDiv;
+		int gxi = (int)gx;
+		int gyi = (int)gy;
+		uint32_t result = 0;
+		uint32_t c00 = i->GetPixel(gxi, gyi);
+		uint32_t c10 = i->GetPixel(gxi + 1, gyi);
+		uint32_t c01 = i->GetPixel(gxi, gyi + 1);
+		uint32_t c11 = i->GetPixel(gxi + 1, gyi + 1);
+		uint8_t i;
+		for (i = 0; i < 3; i++) {
+			//((uint8_t*)&result)[i] = blerp( ((uint8_t*)&c00)[i], ((uint8_t*)&c10)[i], ((uint8_t*)&c01)[i], ((uint8_t*)&c11)[i], gxi - gx, gyi - gy); // this is shady
+			result |= (uint8_t)blerp(getByte(c00, i), getByte(c10, i), getByte(c01, i), getByte(c11, i), gx - gxi, gy - gyi) << (8 * i);
+		}
+		dest->SetPixel(x, y, result);
+	}
+	return dest;
+}
+
 
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
@@ -236,6 +291,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 		case '3':
 			mainTask = RotateFast;
 			break;
+		case '4':
+			mainTask = Scale;
 		}
 		
 
