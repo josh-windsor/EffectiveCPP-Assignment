@@ -189,7 +189,12 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	{
 		// Application starts here...
 
-		cout << "Select Task:";
+		cout << "Select Task:" << endl;
+		cout << "1 - Brighten" << endl;
+		cout << "2 - Greyscale" << endl;
+		cout << "3 - Rotate" << endl;
+		cout << "4 - Scale" << endl;
+		cout << "5 - OpenCV Complete Process" << endl;
 		cout << endl;
 
 
