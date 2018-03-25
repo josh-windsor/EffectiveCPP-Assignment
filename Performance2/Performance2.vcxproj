@@ -174,8 +174,8 @@
       <AdditionalDependencies>opencv_world341.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy "$(ProjectDir)Libraries\opencv\bin\opencv_world341.dll" "$(ProjectDir)..\x64\Release\"</Command>
+      <Message>copy "$(ProjectDir)Libraries\opencv\bin\open_world341.dll" "$(ProjectDir)..\x64\Release\"</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
