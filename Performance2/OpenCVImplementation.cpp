@@ -22,7 +22,7 @@ inline static Mat Scale(Mat i)
 inline static Mat Brighten(Mat i)
 {
 	Mat dest;
-	i.convertTo(dest, -1, 1, 50);
+	i.convertTo(dest, -1, 1, 10);
 	return dest;
 }
 
@@ -41,7 +41,7 @@ inline static Mat GrayScale(Mat i)
 
 inline static Mat CombinedProcess(Mat i) 
 {
-	i.convertTo(i, -1, 1, 50);
+	i.convertTo(i, -1, 1, 10);
 	rotate(i, i, ROTATE_90_CLOCKWISE);
 	resize(i, i, Size(), 2.0, 2.0);
 	return i;
@@ -53,7 +53,7 @@ static inline void ThreadProcess(const char* inName, const char* outName)
 	//read in jpeg
 	Mat b1 = imread(inName, CV_LOAD_IMAGE_GRAYSCALE);
 	//brighten by 50
-	b1.convertTo(b1, -1, 1, 50);
+	b1.convertTo(b1, -1, 1, 10);
 	//rotate clockwise
 	rotate(b1, b1, ROTATE_90_CLOCKWISE);
 	//scales using bilinear interpolation by default
